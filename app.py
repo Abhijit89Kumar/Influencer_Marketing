@@ -441,7 +441,7 @@ Respond professionally, max 3 paragraphs."""
         time.sleep(1.5)
 
         if not final_response.content.strip():
-            final_response = AIMessage(content=f"\${current_offer:.0f} {'works' if current_offer >= min_fair_rate else 'is below my \$' + str(min_fair_rate)}.")
+            final_response = AIMessage(content=f"${current_offer:.0f} {'works' if current_offer >= min_fair_rate else 'is below my $' + str(min_fair_rate)}.")
         negotiation_messages.append(final_response)
         chat_container.markdown(f"👤 @{influencer.handle}: {final_response.content}")
 
