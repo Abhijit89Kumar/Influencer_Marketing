@@ -24,7 +24,7 @@ from influencer_data_generator import Influencer
 load_dotenv()
 
 # --- Streamlit App ---
-st.set_page_config(page_title="Influencer Marketing Agent", page_icon="🚀")
+st.set_page_config(page_title="Influencer Marketing Agent", page_icon="🚀", layout="wide")
 
 # --- Global Variable Initialization ---
 global influencer_data
