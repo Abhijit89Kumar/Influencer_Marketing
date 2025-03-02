@@ -12,9 +12,6 @@ langgraph
 # Pydantic for data validation
 pydantic
 
-# JSON parsing and utilities
-json
-
 # Google API client (for Google Generative AI)
 google-generativeai
 
