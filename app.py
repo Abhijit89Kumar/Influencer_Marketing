@@ -221,7 +221,7 @@ async def negotiate_contract_with_ai(influencer: Influencer, campaign_details: C
         chat_container.markdown(f"  {key.replace('_', ' ').title()}: {value}")
     chat_container.markdown(f"-"*80)
     chat_container.markdown(f"Campaign: {campaign_details.brand_name} - {campaign_details.campaign_goal}")
-    chat_container.markdown(f"Initial Offer: ${float(campaign_details.initial_offer)} | Max Offer: ${float(campaign_details.max_offer)}")
+    chat_container.markdown(f"Initial Offer: \${float(campaign_details.initial_offer)} | Max Offer: \${float(campaign_details.max_offer)}")
     chat_container.markdown(f"{'='*80}\n\n")
 
     # Verification LLM
@@ -247,7 +247,7 @@ async def negotiate_contract_with_ai(influencer: Influencer, campaign_details: C
     # Initial message
     if not negotiation_messages:
         initial_message = (f"Hi {influencer.name}, I'm representing {campaign_details.brand_name}. We'd like to collaborate on "
-                           f"a campaign for {campaign_details.campaign_goal}. We're offering ${campaign_details.initial_offer} "
+                           f"a campaign for {campaign_details.campaign_goal}. We're offering \${campaign_details.initial_offer} "
                            f"for a sponsored post highlighting our language learning platform. Are you interested?")
         negotiation_messages.append(HumanMessage(content=initial_message))
         chat_container.markdown(f"🤖 BRAND AGENT: {initial_message}")
@@ -265,26 +265,26 @@ async def negotiate_contract_with_ai(influencer: Influencer, campaign_details: C
         try:
             if turn == 0:
                 influencer_strategy = f"""
-                Express interest in the collaboration but professionally state your typical rate (${ideal_rate}).
+                Express interest in the collaboration but professionally state your typical rate (\${ideal_rate}).
                 Ask about the specific deliverables expected for this campaign.
                 Be friendly but firm about your value.
                 """
             elif turn == 1:
                 influencer_strategy = f"""
                 Acknowledge their counter-offer but remain firm on your value.
-                If their offer is still far below your rate, suggest a middle ground of ${min(max_rate, int((ideal_rate + current_offer)/2))}.
+                If their offer is still far below your rate, suggest a middle ground of \${min(max_rate, int((ideal_rate + current_offer)/2))}.
                 Ask about specific deliverables to determine if the scope can be adjusted.
                 """
             elif turn == 2:
                 influencer_strategy = f"""
                 Make your final position clear.
-                If their offer is at least ${min_fair_rate}, consider accepting.
-                If still too low, politely suggest that your rates start at ${min_fair_rate} for minimal content.
+                If their offer is at least \${min_fair_rate}, consider accepting.
+                If still too low, politely suggest that your rates start at \${min_fair_rate} for minimal content.
                 """
             else:
                 influencer_strategy = f"""
                 Make a final decision based on their latest offer.
-                Accept if it's at least ${min_fair_rate}.
+                Accept if it's at least \${min_fair_rate}.
                 Decline if it's below that, but leave the door open for future collaborations.
                 Keep it brief and professional.
                 """
@@ -293,10 +293,10 @@ async def negotiate_contract_with_ai(influencer: Influencer, campaign_details: C
 Your niche is: {influencer.niche}
 Persona traits: {', '.join(f"{k}: {v}" for k, v in influencer.persona.items())}
 NEGOTIATION CONTEXT:
-- The brand "{campaign_details.brand_name}" wants you to promote their language learning platform
-- Their current offer is ${current_offer}
-- Your ideal rate would be ${ideal_rate} based on your audience size
-- The minimum you'd accept is ${min_fair_rate}
+- The brand '{campaign_details.brand_name}' wants you to promote their language learning platform
+- Their current offer is \${current_offer}
+- Your ideal rate would be \${ideal_rate} based on your audience size
+- The minimum you'd accept is \${min_fair_rate}
 YOUR STRATEGY:
 {influencer_strategy}
 IMPORTANT:
@@ -314,9 +314,9 @@ IMPORTANT:
             time.sleep(1.5)
             
             if not inf_response.content.strip():
-                inf_response_text = f"Thanks for your offer of ${current_offer}. " + (
+                inf_response_text = f"Thanks for your offer of \${current_offer}. " + (
                     f"That works for me!" if current_offer >= min_fair_rate else
-                    f"My standard rate is ${ideal_rate}. I'd need at least ${min_fair_rate}."
+                    f"My standard rate is \${ideal_rate}. I'd need at least \${min_fair_rate}."
                 )
                 inf_response = AIMessage(content=inf_response_text)
                 chat_container.markdown(f"⚠️ WARNING: Empty response. Using fallback.")
@@ -328,7 +328,7 @@ IMPORTANT:
                     potential_counter = float(match)
                     if potential_counter > current_offer * 1.05 and potential_counter > min_fair_rate:
                         influencer_counter = potential_counter
-                        chat_container.markdown(f"💰 Influencer counter-offer: ${influencer_counter}")
+                        chat_container.markdown(f"💰 Influencer counter-offer: \${influencer_counter}")
                         break
                 except ValueError:
                     continue
@@ -340,7 +340,7 @@ IMPORTANT:
             verification_result = await verify_negotiation_status(verification_llm, inf_response.content, current_offer)
             if verification_result == "accepted":
                 status = "Agreement reached"
-                chat_container.markdown(f"✅ AGREEMENT REACHED at ${current_offer}!")
+                chat_container.markdown(f"✅ AGREEMENT REACHED at \${current_offer}!")
                 break
             elif verification_result == "rejected":
                 status = "Agreement failed"
@@ -350,29 +350,29 @@ IMPORTANT:
             
         except Exception as e:
             chat_container.markdown(f"⚠️ ERROR in influencer response: {e}")
-            inf_response = AIMessage(content=f"My rates start at ${min_fair_rate}. Let me know if that works.")
+            inf_response = AIMessage(content=f"My rates start at \${min_fair_rate}. Let me know if that works.")
             negotiation_messages.append(inf_response)
             chat_container.markdown(f"👤 @{influencer.handle}: {inf_response.content}")
         
         if influencer_counter > 0 and influencer_counter > float(campaign_details.max_offer) * 1.5:
-            chat_container.markdown(f"⚠️ Large gap: ${influencer_counter} vs max ${campaign_details.max_offer}")
+            chat_container.markdown(f"⚠️ Large gap: \${influencer_counter} vs max \${campaign_details.max_offer}")
             status = "Agreement unlikely - too far apart"
             if current_offer < float(campaign_details.max_offer) * 0.95:
                 final_offer = float(campaign_details.max_offer) * 0.95
-                final_message = f"Our max is ${final_offer:.0f}. Would that work for a single post?"
+                final_message = f"Our max is \${final_offer:.0f}. Would that work for a single post?"
                 negotiation_messages.append(HumanMessage(content=final_message))
                 chat_container.markdown(f"🤖 BRAND AGENT: {final_message}")
                 current_offer = final_offer
 
                 time.sleep(1.5)
                 final_response = await agent_llm.ainvoke([
-                    SystemMessage(content=f"Final offer: ${final_offer:.0f}. Min acceptable: ${min_fair_rate}. Decide."),
+                    SystemMessage(content=f"Final offer: \${final_offer:.0f}. Min acceptable: \${min_fair_rate}. Decide."),
                     HumanMessage(content=f"Final offer: {final_message}\n\nYour response:")
                 ])
                 time.sleep(1.5)
 
                 if not final_response.content.strip():
-                    final_response = AIMessage(content=f"${final_offer:.0f} {'works' if final_offer >= min_fair_rate else 'is below my minimum of $' + str(min_fair_rate)}.")
+                    final_response = AIMessage(content=f"\${final_offer:.0f} {'works' if final_offer >= min_fair_rate else 'is below my minimum of \$' + str(min_fair_rate)}.")
                 negotiation_messages.append(final_response)
                 chat_container.markdown(f"👤 @{influencer.handle}: {final_response.content}")
 
@@ -392,13 +392,13 @@ IMPORTANT:
             next_offer = max(next_offer, current_offer)
 
             agent_strategy = (
-                f"Acknowledge their rate, offer ${next_offer:.0f}, outline deliverables." if turn == 0 else
-                f"Address concerns, offer ${next_offer:.0f}, near limit." if turn == 1 else
-                f"Final offer ${next_offer:.0f}, emphasize partnership value."
+                f"Acknowledge their rate, offer \${next_offer:.0f}, outline deliverables." if turn == 0 else
+                f"Address concerns, offer \${next_offer:.0f}, near limit." if turn == 1 else
+                f"Final offer \${next_offer:.0f}, emphasize partnership value."
             )
             agent_instruction = f"""You are a brand rep for {campaign_details.brand_name}.
 Negotiating with {influencer.name} (@{influencer.handle}).
-Current: ${current_offer}, Next: ${next_offer}, Max: ${campaign_details.max_offer}.
+Current: \${current_offer}, Next: \${next_offer}, Max: \${campaign_details.max_offer}.
 Strategy: {agent_strategy}
 Respond professionally, max 3 paragraphs."""
 
@@ -409,39 +409,39 @@ Respond professionally, max 3 paragraphs."""
             time.sleep(1.5)
 
             if not agent_response.content.strip():
-                agent_response = HumanMessage(content=f"We can offer ${next_offer:.0f} for a post. Does that work?")
-                chat_container.markdown(f"⚠️ Empty agent response, using fallback: ${next_offer:.0f}")
+                agent_response = HumanMessage(content=f"We can offer \${next_offer:.0f} for a post. Does that work?")
+                chat_container.markdown(f"⚠️ Empty agent response, using fallback: \${next_offer:.0f}")
 
             negotiation_messages.append(agent_response)
             chat_container.markdown(f"🤖 BRAND AGENT: {agent_response.content}")
             current_offer = next_offer
-            chat_container.markdown(f"💰 Current offer: ${current_offer}")
+            chat_container.markdown(f"💰 Current offer: \${current_offer}")
 
         except Exception as e:
             chat_container.markdown(f"⚠️ ERROR in agent response: {e}")
             next_offer = min(current_offer * 1.1, float(campaign_details.max_offer))
-            agent_response = HumanMessage(content=f"We can offer ${next_offer:.0f}. Does that work?")
+            agent_response = HumanMessage(content=f"We can offer \${next_offer:.0f}. Does that work?")
             negotiation_messages.append(agent_response)
             chat_container.markdown(f"🤖 BRAND AGENT: {agent_response.content}")
             current_offer = next_offer
 
         if current_offer >= float(campaign_details.max_offer) * 0.95:
-            chat_container.markdown(f"⚠️ Near max offer: ${campaign_details.max_offer}")
+            chat_container.markdown(f"⚠️ Near max offer: \${campaign_details.max_offer}")
 
     if status == "Negotiation in progress":
         time.sleep(1)
-        final_message = f"Our final offer is ${current_offer:.0f}. Does that work?"
+        final_message = f"Our final offer is \${current_offer:.0f}. Does that work?"
         negotiation_messages.append(HumanMessage(content=final_message))
         chat_container.markdown(f"🤖 BRAND AGENT: {final_message}")
 
         final_response = await agent_llm.ainvoke([
-            SystemMessage(content=f"Final offer: ${current_offer:.0f}. Min: ${min_fair_rate}. Decide."),
+            SystemMessage(content=f"Final offer: \${current_offer:.0f}. Min: \${min_fair_rate}. Decide."),
             HumanMessage(content=f"Final offer: {final_message}\n\nYour response:")
         ])
         time.sleep(1.5)
 
         if not final_response.content.strip():
-            final_response = AIMessage(content=f"${current_offer:.0f} {'works' if current_offer >= min_fair_rate else 'is below my $' + str(min_fair_rate)}.")
+            final_response = AIMessage(content=f"\${current_offer:.0f} {'works' if current_offer >= min_fair_rate else 'is below my \$' + str(min_fair_rate)}.")
         negotiation_messages.append(final_response)
         chat_container.markdown(f"👤 @{influencer.handle}: {final_response.content}")
 
@@ -459,10 +459,10 @@ async def verify_negotiation_status(verification_llm, message_content, current_o
     """
     try:
         verification_prompt = f"""
-        TASK: Determine if the influencer has ACCEPTED or REJECTED the brand's offer of ${current_offer}, or if the negotiation is CONTINUING.
+        TASK: Determine if the influencer has ACCEPTED or REJECTED the brand's offer of \${current_offer}, or if the negotiation is CONTINUING.
 
         Influencer's message:
-        "{message_content}"
+        '{message_content}'
 
         Analyze ONLY THIS MESSAGE and determine if the influencer has:
         1. ACCEPTED the offer
