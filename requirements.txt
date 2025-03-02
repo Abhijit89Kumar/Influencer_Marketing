@@ -1,0 +1,22 @@
+# Core dependencies
+streamlit
+asyncio
+python-dotenv
+
+# LangChain and related libraries
+langchain
+langchain-core
+langchain-google-genai
+langgraph
+
+# Pydantic for data validation
+pydantic
+
+# JSON parsing and utilities
+json
+
+# Google API client (for Google Generative AI)
+google-generativeai
+
+# Optional: for better error handling and logging
+typing-extensions
