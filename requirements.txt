@@ -7,7 +7,7 @@ python-dotenv
 langchain
 langchain-core
 langchain-google-genai
-langgraph
+langgraph==0.2.32
 
 # Pydantic for data validation
 pydantic
