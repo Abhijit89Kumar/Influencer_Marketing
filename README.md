@@ -37,8 +37,8 @@ The primary goal is to showcase how LangGraph can be used to build complex, stat
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your-repository-url>
-    cd <repository-name>
+    git clone https://github.com/Abhijit89Kumar/Influencer_Marketing.git
+    cd Influencer_Marketing
     ```
 
 2.  **Create a virtual environment (recommended):**
